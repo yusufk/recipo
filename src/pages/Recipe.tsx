@@ -136,7 +136,7 @@ export default function Recipe() {
         )}
         {' · '}
         <Link to={user ? `/submit?vary=${currentPath}` : '/login'} style={{ color: 'var(--herb)' }}>
-          🔀 Make a variation
+          🔀 Make a variation (fork)
         </Link>
       </div>
 
