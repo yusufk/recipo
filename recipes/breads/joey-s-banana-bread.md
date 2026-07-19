@@ -1,5 +1,5 @@
 ---
-title: "Joey's Banana Bread"
+title: ""Joey's Banana Bread""
 author: yusufk
 category: breads
 cuisine: International
@@ -11,7 +11,7 @@ tags: [cake, dessert, banana, comfort]
 created: 2026-07-19
 ---
 
-# Joey's Banana Bread
+# "Joey's Banana Bread"
 
 ## Ingredients
 1⁄2 cup butter, softened
@@ -23,6 +23,7 @@ created: 2026-07-19
 1⁄2 teaspoon salt
 1⁄2 teaspoon vanilla (optional)
 1/2 cup pecan nuts
+1 tablespoon cacao nibs
 2 tablespoons honey
 2 tablespoons maple syrup (optional)
 1 espresso
@@ -31,7 +32,7 @@ created: 2026-07-19
 1. Remove odd pots and pans from oven.
 2. Preheat oven to 350º / 180º.
 3. Cream together butter and sugar.
-4. Add eggs and crushed bananas.
+4. Add eggs, cacao nibs and crushed bananas.
 5. Combine well.
 6. Sift together flour, soda and salt. Add to creamed mixture. Add vanilla.
 7. Mix just until combined. Do not overmix.
