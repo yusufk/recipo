@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { fetchRecipeContent } from '../hooks/useRecipes'
+import Comments from '../components/Comments'
 
 export default function Recipe() {
   const { category, slug } = useParams()
@@ -80,6 +81,8 @@ export default function Recipe() {
           Edit this recipe
         </a>
       </div>
+
+      <Comments term={`recipes/${category}/${slug}`} />
     </article>
   )
 }
