@@ -127,7 +127,7 @@ export async function submitRecipe(
   const imagePath = recipe.image_file ? `images/${slug}.${recipe.image_file.name.split('.').pop()}` : ''
 
   const frontmatter = `---
-title: "${recipe.title}"
+title: "${recipe.title.replace(/"/g, "'")}"
 author: ${userLogin}
 category: ${recipe.category}
 cuisine: ${recipe.cuisine}
@@ -232,7 +232,7 @@ export async function editRecipe(
   recipe: { title: string; category: string; cuisine: string; serves: string; prep_time: string; cook_time: string; difficulty: string; tags: string; ingredients: string; method: string; notes: string }
 ) {
   const frontmatter = `---
-title: "${recipe.title}"
+title: "${recipe.title.replace(/"/g, "'")}"
 author: ${userLogin}
 category: ${recipe.category}
 cuisine: ${recipe.cuisine}

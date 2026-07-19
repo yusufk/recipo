@@ -1,5 +1,5 @@
 ---
-title: ""Joey's Banana Bread""
+title: "Joey's Banana Bread"
 author: yusufk
 category: breads
 cuisine: International
@@ -11,7 +11,7 @@ tags: [cake, dessert, banana, comfort]
 created: 2026-07-19
 ---
 
-# "Joey's Banana Bread"
+# Joey's Banana Bread
 
 ## Ingredients
 1⁄2 cup butter, softened
