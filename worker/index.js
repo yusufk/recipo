@@ -11,6 +11,12 @@ export default {
       return new Response('Method not allowed', { status: 405 });
     }
 
+    // Validate origin — reject requests not from our site
+    const origin = request.headers.get('Origin');
+    if (origin !== env.ALLOWED_ORIGIN) {
+      return new Response('Forbidden', { status: 403 });
+    }
+
     const url = new URL(request.url);
 
     if (url.pathname === '/auth/token') {
