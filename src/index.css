@@ -209,6 +209,11 @@ body {
 .recipe-card .meta .author {
   color: var(--accent);
   font-weight: 600;
+  text-decoration: none;
+}
+
+.recipe-card .meta .author:hover {
+  text-decoration: underline;
 }
 
 .recipe-card .tags {

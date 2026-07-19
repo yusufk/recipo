@@ -50,7 +50,7 @@ export default function Recipe() {
       <h1 style={{ marginTop: '1rem' }}>{meta.title as string || slug}</h1>
 
       <div className="recipe-meta">
-        {'author' in meta && <span>by <strong>@{String(meta.author)}</strong> · </span>}
+        {'author' in meta && <span>by <Link to={`/user/${String(meta.author)}`} style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>@{String(meta.author)}</Link> · </span>}
         {'cuisine' in meta && <span>{String(meta.cuisine)} · </span>}
         {'difficulty' in meta && <span>{String(meta.difficulty)} · </span>}
         {'serves' in meta && <span>Serves {String(meta.serves)} · </span>}

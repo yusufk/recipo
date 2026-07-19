@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useRecipes, type RecipeMeta } from '../hooks/useRecipes'
 
 export default function Home() {
@@ -103,7 +103,13 @@ function RecipeCard({ recipe, onClick }: { recipe: RecipeMeta; onClick: () => vo
     <div className="recipe-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onClick()}>
       <h3>{recipe.title}</h3>
       <div className="meta">
-        <span className="author">by @{recipe.author}</span>
+        <Link
+          to={`/user/${recipe.author}`}
+          className="author"
+          onClick={e => e.stopPropagation()}
+        >
+          by @{recipe.author}
+        </Link>
         {recipe.cuisine && <span> · {recipe.cuisine}</span>}
         {recipe.difficulty && <span> · {recipe.difficulty}</span>}
         {recipe.prep_time && <span> · ⏱ {recipe.prep_time}</span>}
