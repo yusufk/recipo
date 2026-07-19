@@ -21,7 +21,8 @@ export default function Home() {
       result = result.filter(r =>
         r.title.toLowerCase().includes(q) ||
         r.cuisine.toLowerCase().includes(q) ||
-        r.tags.some(t => t.toLowerCase().includes(q))
+        r.tags.some(t => t.toLowerCase().includes(q)) ||
+        r.ingredients.toLowerCase().includes(q)
       )
     }
     return result
@@ -54,7 +55,7 @@ export default function Home() {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search recipes..."
+          placeholder="Search recipes, ingredients, cuisines..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           aria-label="Search recipes"

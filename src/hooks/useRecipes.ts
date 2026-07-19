@@ -19,6 +19,7 @@ export interface RecipeMeta {
   created: string
   slug: string
   path: string
+  ingredients: string
 }
 
 interface RecipeFile {
@@ -77,7 +78,11 @@ export function useRecipes() {
         for (const file of files.filter(f => f.name.endsWith('.md'))) {
           const fileRes = await fetch(file.download_url)
           const content = await fileRes.text()
-          const { meta } = parseFrontmatter(content)
+          const { meta, body } = parseFrontmatter(content)
+
+          // Extract ingredients section from body
+          const ingredientsMatch = body.match(/##?\s*Ingredients\s*\n([\s\S]*?)(?=\n##?\s|\n*$)/)
+          const ingredients = ingredientsMatch ? ingredientsMatch[1].trim() : ''
 
           allRecipes.push({
             title: (meta.title as string) || file.name.replace('.md', ''),
@@ -94,6 +99,7 @@ export function useRecipes() {
             created: (meta.created as string) || '',
             slug: file.name.replace('.md', ''),
             path: file.path,
+            ingredients,
           })
         }
       }
