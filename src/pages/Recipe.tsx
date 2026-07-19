@@ -33,7 +33,9 @@ export default function Recipe() {
     fetchRecipeContent(currentPath)
       .then(({ meta, body }) => {
         setMeta(meta)
-        setBody(body)
+        // Strip the leading H1 title from body (already shown from frontmatter)
+        const stripped = body.replace(/^\s*#\s+.+\n*/, '')
+        setBody(stripped)
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
@@ -63,6 +65,15 @@ export default function Recipe() {
       </Link>
 
       <h1 style={{ marginTop: '1rem' }}>{meta.title as string || slug}</h1>
+
+      {/* Recipe image */}
+      {meta.image ? (
+        <img
+          src={`https://raw.githubusercontent.com/yusufk/recipo/main/${String(meta.image).replace(/^\//, '')}`}
+          alt={String(meta.title)}
+          style={{ width: '100%', maxHeight: '350px', objectFit: 'cover', borderRadius: '4px', marginTop: '1rem', marginBottom: '1rem', border: '1px solid var(--border)' }}
+        />
+      ) : null}
 
       {/* Based-on attribution */}
       {originalRecipe && (

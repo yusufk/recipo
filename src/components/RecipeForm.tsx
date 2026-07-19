@@ -15,6 +15,7 @@ export interface RecipeFormData {
   ingredients: string
   method: string
   notes: string
+  image_file?: File
 }
 
 export const EMPTY_FORM: RecipeFormData = {
@@ -94,6 +95,25 @@ export default function RecipeForm({ form, setForm, onSubmit, submitting, error,
             <label htmlFor="tags">Tags</label>
             <input id="tags" value={form.tags} onChange={update('tags')} placeholder="chicken, curry, weeknight" />
           </div>
+        </div>
+
+        <div className="field">
+          <label htmlFor="image">Photo (optional)</label>
+          <input
+            id="image"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) setForm(f => ({ ...f, image_file: file }))
+            }}
+            style={{ fontFamily: 'var(--font-body)' }}
+          />
+          {form.image_file && (
+            <p style={{ fontSize: '0.8rem', color: 'var(--herb)', marginTop: '0.25rem' }}>
+              📷 {form.image_file.name} ({(form.image_file.size / 1024).toFixed(0)} KB)
+            </p>
+          )}
         </div>
 
         <div className="field">

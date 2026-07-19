@@ -101,6 +101,13 @@ export default function Home() {
 function RecipeCard({ recipe, onClick }: { recipe: RecipeMeta; onClick: () => void }) {
   return (
     <div className="recipe-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onClick()}>
+      {recipe.image && (
+        <img
+          src={`https://raw.githubusercontent.com/yusufk/recipo/main/${recipe.image.replace(/^\//, '')}`}
+          alt={recipe.title}
+          className="recipe-card-img"
+        />
+      )}
       <h3>{recipe.title}</h3>
       <div className="meta">
         <Link

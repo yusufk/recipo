@@ -200,6 +200,15 @@ body {
   line-height: 1.2;
 }
 
+.recipe-card-img {
+  width: calc(100% + 3rem);
+  height: 180px;
+  object-fit: cover;
+  margin: -1.5rem -1.5rem 1rem -1.5rem;
+  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid var(--border);
+}
+
 .recipe-card .meta {
   font-size: 0.8rem;
   color: var(--ink-light);

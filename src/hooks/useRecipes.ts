@@ -119,11 +119,12 @@ export async function fetchRecipeContent(path: string): Promise<{ meta: Record<s
 export async function submitRecipe(
   token: string,
   userLogin: string,
-  recipe: { title: string; category: string; cuisine: string; serves: string; prep_time: string; cook_time: string; difficulty: string; tags: string; ingredients: string; method: string; notes: string },
+  recipe: { title: string; category: string; cuisine: string; serves: string; prep_time: string; cook_time: string; difficulty: string; tags: string; ingredients: string; method: string; notes: string; image_file?: File },
   basedOn?: string
 ) {
   const slug = recipe.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   const path = `recipes/${recipe.category}/${slug}.md`
+  const imagePath = recipe.image_file ? `images/${slug}.${recipe.image_file.name.split('.').pop()}` : ''
 
   const frontmatter = `---
 title: "${recipe.title}"
@@ -134,7 +135,7 @@ serves: ${recipe.serves}
 prep_time: ${recipe.prep_time}
 cook_time: ${recipe.cook_time}
 difficulty: ${recipe.difficulty}
-tags: [${recipe.tags.split(',').map(t => t.trim()).join(', ')}]${basedOn ? `\nbased_on: ${basedOn}` : ''}
+tags: [${recipe.tags.split(',').map(t => t.trim()).join(', ')}]${basedOn ? `\nbased_on: ${basedOn}` : ''}${imagePath ? `\nimage: ${imagePath}` : ''}
 created: ${new Date().toISOString().split('T')[0]}
 ---`
 
@@ -193,6 +194,20 @@ ${recipe.notes ? `\n## Notes\n${recipe.notes}` : ''}
       branch: branchName,
     }),
   })
+
+  // Upload image if provided
+  if (recipe.image_file && imagePath) {
+    const imageData = await fileToBase64(recipe.image_file)
+    await fetch(`https://api.github.com/repos/${userLogin}/${REPO_NAME}/contents/${imagePath}`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `Add image for: ${recipe.title}`,
+        content: imageData,
+        branch: branchName,
+      }),
+    })
+  }
 
   // Create a PR
   const prRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/pulls`, {
@@ -305,4 +320,17 @@ ${recipe.notes ? `\n## Notes\n${recipe.notes}` : ''}
 
   const prData = await prRes.json()
   return prData
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = reader.result as string
+      // Remove the data:image/...;base64, prefix
+      resolve(result.split(',')[1])
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
 }
