@@ -2,7 +2,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Layout() {
-  const { user, logout } = useAuth()
+  const { user, login, logout } = useAuth()
   const location = useLocation()
 
   const isActive = (path: string) => location.pathname === path ? 'active' : ''
@@ -18,7 +18,7 @@ export default function Layout() {
               <button onClick={logout} className="btn-small">Sign out</button>
             </div>
           ) : (
-            <Link to="/login" className="btn-small">Sign in with GitHub</Link>
+            <button onClick={login} className="btn-small">Sign in with GitHub</button>
           )}
         </div>
         <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>

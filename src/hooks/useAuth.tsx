@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID || ''
+const AUTH_WORKER = import.meta.env.VITE_AUTH_WORKER_URL || ''
 const SCOPE = 'public_repo'
 const TOKEN_KEY = 'recipo_gh_token'
 const USER_KEY = 'recipo_gh_user'
+const REDIRECT_URI = `${window.location.origin}/recipo/login`
 
 interface GitHubUser {
   login: string
@@ -11,20 +13,11 @@ interface GitHubUser {
   name: string | null
 }
 
-interface DeviceCodeResponse {
-  device_code: string
-  user_code: string
-  verification_uri: string
-  expires_in: number
-  interval: number
-}
-
 interface AuthContextType {
   user: GitHubUser | null
   token: string | null
   isLoading: boolean
-  deviceCode: DeviceCodeResponse | null
-  startDeviceFlow: () => Promise<void>
+  login: () => void
   logout: () => void
 }
 
@@ -37,7 +30,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return stored ? JSON.parse(stored) : null
   })
   const [isLoading, setIsLoading] = useState(false)
-  const [deviceCode, setDeviceCode] = useState<DeviceCodeResponse | null>(null)
 
   // Fetch user info when we have a token
   useEffect(() => {
@@ -51,7 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(data)
             localStorage.setItem(USER_KEY, JSON.stringify(data))
           } else {
-            // Token is invalid
             logout()
           }
         })
@@ -59,68 +50,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token])
 
-  const startDeviceFlow = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      // Step 1: Request device code
-      const res = await fetch('https://github.com/login/device/code', {
+  // Handle the OAuth callback — check for ?code= in the URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('code')
+
+    if (code && !token) {
+      setIsLoading(true)
+      // Exchange code for token via our Worker
+      fetch(`${AUTH_WORKER}/auth/token`, {
         method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ client_id: CLIENT_ID, scope: SCOPE }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
       })
-      const data: DeviceCodeResponse = await res.json()
-      setDeviceCode(data)
-
-      // Copy code to clipboard
-      try {
-        await navigator.clipboard.writeText(data.user_code)
-      } catch { /* clipboard might fail, that's ok */ }
-
-      // Open verification URL
-      window.open(data.verification_uri, '_blank')
-
-      // Step 3: Poll for token
-      const pollInterval = (data.interval || 5) * 1000
-      const expiresAt = Date.now() + data.expires_in * 1000
-
-      const poll = async () => {
-        if (Date.now() > expiresAt) {
-          setDeviceCode(null)
-          setIsLoading(false)
-          return
-        }
-
-        const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
-          method: 'POST',
-          headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            client_id: CLIENT_ID,
-            device_code: data.device_code,
-            grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
-          }),
+        .then(r => r.json())
+        .then(data => {
+          if (data.access_token) {
+            localStorage.setItem(TOKEN_KEY, data.access_token)
+            setToken(data.access_token)
+          }
         })
-        const tokenData = await tokenRes.json()
-
-        if (tokenData.access_token) {
-          localStorage.setItem(TOKEN_KEY, tokenData.access_token)
-          setToken(tokenData.access_token)
-          setDeviceCode(null)
+        .catch(err => console.error('Token exchange failed:', err))
+        .finally(() => {
           setIsLoading(false)
-        } else if (tokenData.error === 'authorization_pending' || tokenData.error === 'slow_down') {
-          const delay = tokenData.error === 'slow_down' ? pollInterval + 5000 : pollInterval
-          setTimeout(poll, delay)
-        } else {
-          // Expired or denied
-          setDeviceCode(null)
-          setIsLoading(false)
-        }
-      }
-
-      setTimeout(poll, pollInterval)
-    } catch (err) {
-      console.error('Device flow error:', err)
-      setIsLoading(false)
+          // Clean up the URL
+          window.history.replaceState({}, '', window.location.pathname)
+        })
     }
+  }, [])
+
+  const login = useCallback(() => {
+    const state = crypto.randomUUID()
+    sessionStorage.setItem('oauth_state', state)
+
+    const params = new URLSearchParams({
+      client_id: CLIENT_ID,
+      redirect_uri: REDIRECT_URI,
+      scope: SCOPE,
+      state,
+    })
+
+    window.location.href = `https://github.com/login/oauth/authorize?${params}`
   }, [])
 
   const logout = useCallback(() => {
@@ -128,11 +98,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(USER_KEY)
     setToken(null)
     setUser(null)
-    setDeviceCode(null)
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, deviceCode, startDeviceFlow, logout }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

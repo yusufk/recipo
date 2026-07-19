@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 
 export default function Login() {
-  const { user, isLoading, deviceCode, startDeviceFlow } = useAuth()
+  const { user, isLoading, login } = useAuth()
   const navigate = useNavigate()
 
   // Redirect if already logged in
@@ -13,29 +13,13 @@ export default function Login() {
 
   if (user) return null
 
-  if (deviceCode) {
+  if (isLoading) {
     return (
       <div className="auth-box">
-        <h2 style={{ fontFamily: 'var(--font-handwritten)', fontSize: '2rem', marginBottom: '0.5rem' }}>
-          Almost there!
-        </h2>
-        <p className="instructions">
-          Enter this code at GitHub:
-        </p>
-        <div className="code">{deviceCode.user_code}</div>
-        <p className="instructions" style={{ fontSize: '0.85rem' }}>
-          Code copied to clipboard. A new tab should have opened.
-          <br />If not, go to{' '}
-          <a href={deviceCode.verification_uri} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>
-            github.com/login/device
-          </a>
-        </p>
-        <div style={{ marginTop: '1.5rem' }}>
-          <span className="spinner" />
-          <span style={{ fontFamily: 'var(--font-handwritten)', fontSize: '1.2rem', color: 'var(--ink-light)' }}>
-            Waiting for you to authorise...
-          </span>
-        </div>
+        <span className="spinner" />
+        <span style={{ fontFamily: 'var(--font-handwritten)', fontSize: '1.5rem' }}>
+          Signing you in...
+        </span>
       </div>
     )
   }
@@ -49,8 +33,8 @@ export default function Login() {
         You need a GitHub account to submit and edit recipes.
         <br />Contributions are made via pull requests.
       </p>
-      <button className="btn" onClick={startDeviceFlow} disabled={isLoading}>
-        {isLoading ? 'Starting...' : '🔑 Sign in'}
+      <button className="btn" onClick={login}>
+        🔑 Sign in with GitHub
       </button>
       <p style={{ fontSize: '0.8rem', color: 'var(--ink-light)', marginTop: '1rem' }}>
         We only request access to public repositories.

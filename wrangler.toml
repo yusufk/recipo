@@ -1,0 +1,7 @@
+name = "recipo-auth"
+main = "worker/index.js"
+compatibility_date = "2024-12-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://yusuf.kaka.co.za"
+GITHUB_CLIENT_ID = "Ov23lihIBMzaqmOEALUk"
