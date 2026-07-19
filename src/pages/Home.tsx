@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useRecipes, type RecipeMeta } from '../hooks/useRecipes'
+import { isFavourite, toggleFavourite } from '../hooks/useFavourites'
 
 export default function Home() {
   const { recipes, loading, error } = useRecipes()
@@ -112,6 +113,8 @@ export default function Home() {
 }
 
 function RecipeCard({ recipe, onClick }: { recipe: RecipeMeta; onClick: () => void }) {
+  const [saved, setSaved] = useState(() => isFavourite(recipe.path))
+
   return (
     <div className="recipe-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onClick()}>
       {recipe.image && (
@@ -121,7 +124,16 @@ function RecipeCard({ recipe, onClick }: { recipe: RecipeMeta; onClick: () => vo
           className="recipe-card-img"
         />
       )}
-      <h3>{recipe.title}</h3>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+        <h3 style={{ flex: 1 }}>{recipe.title}</h3>
+        <button
+          onClick={e => { e.stopPropagation(); setSaved(toggleFavourite(recipe.path)) }}
+          title={saved ? 'Remove from saved' : 'Save recipe'}
+          style={{ background: 'none', border: 'none', fontSize: '1.3rem', cursor: 'pointer', opacity: saved ? 1 : 0.3, transition: 'opacity 0.2s', padding: '0', lineHeight: 1 }}
+        >
+          {saved ? '⭐' : '☆'}
+        </button>
+      </div>
       <div className="meta">
         <Link
           to={`/user/${recipe.author}`}

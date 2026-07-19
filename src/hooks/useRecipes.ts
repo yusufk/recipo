@@ -62,46 +62,59 @@ export function useRecipes() {
   async function fetchRecipeIndex() {
     try {
       setLoading(true)
+      // Use auth token if available (higher rate limit: 5000/hr vs 60/hr)
+      const token = localStorage.getItem('recipo_gh_token')
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
+
       // Get all category folders
-      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${RECIPES_PATH}`)
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${RECIPES_PATH}`, { headers })
       if (!res.ok) throw new Error('Failed to fetch recipes')
       const categories: RecipeFile[] = await res.json()
 
       const allRecipes: RecipeMeta[] = []
 
-      // Fetch files in each category
-      for (const cat of categories.filter(c => c.type === 'dir')) {
-        const catRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${cat.path}`)
-        if (!catRes.ok) continue
+      // Fetch files in each category (parallel for speed)
+      const catPromises = categories.filter(c => c.type === 'dir').map(async (cat) => {
+        const catRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${cat.path}`, { headers })
+        if (!catRes.ok) return []
         const files: RecipeFile[] = await catRes.json()
 
-        for (const file of files.filter(f => f.name.endsWith('.md'))) {
-          const fileRes = await fetch(file.download_url)
-          const content = await fileRes.text()
-          const { meta, body } = parseFrontmatter(content)
+        const recipePromises = files
+          .filter(f => f.name.endsWith('.md') && f.name !== '_template.md')
+          .map(async (file) => {
+            const fileRes = await fetch(file.download_url)
+            const content = await fileRes.text()
+            const { meta, body } = parseFrontmatter(content)
 
-          // Extract ingredients section from body
-          const ingredientsMatch = body.match(/##?\s*Ingredients\s*\n([\s\S]*?)(?=\n##?\s|\n*$)/)
-          const ingredients = ingredientsMatch ? ingredientsMatch[1].trim() : ''
+            // Extract ingredients section from body
+            const ingredientsMatch = body.match(/##?\s*Ingredients\s*\n([\s\S]*?)(?=\n##?\s|\n*$)/)
+            const ingredients = ingredientsMatch ? ingredientsMatch[1].trim() : ''
 
-          allRecipes.push({
-            title: (meta.title as string) || file.name.replace('.md', ''),
-            author: (meta.author as string) || 'unknown',
-            category: cat.name,
-            cuisine: (meta.cuisine as string) || '',
-            serves: (meta.serves as string) || '',
-            prep_time: (meta.prep_time as string) || '',
-            cook_time: (meta.cook_time as string) || '',
-            difficulty: (meta.difficulty as string) || '',
-            tags: (meta.tags as string[]) || [],
-            image: meta.image as string | undefined,
-            based_on: (meta.based_on as string) || undefined,
-            created: (meta.created as string) || '',
-            slug: file.name.replace('.md', ''),
-            path: file.path,
-            ingredients,
+            return {
+              title: (meta.title as string) || file.name.replace('.md', ''),
+              author: (meta.author as string) || 'unknown',
+              category: cat.name,
+              cuisine: (meta.cuisine as string) || '',
+              serves: (meta.serves as string) || '',
+              prep_time: (meta.prep_time as string) || '',
+              cook_time: (meta.cook_time as string) || '',
+              difficulty: (meta.difficulty as string) || '',
+              tags: (meta.tags as string[]) || [],
+              image: meta.image as string | undefined,
+              based_on: (meta.based_on as string) || undefined,
+              created: (meta.created as string) || '',
+              slug: file.name.replace('.md', ''),
+              path: file.path,
+              ingredients,
+            } as RecipeMeta
           })
-        }
+
+        return Promise.all(recipePromises)
+      })
+
+      const results = await Promise.all(catPromises)
+      for (const batch of results) {
+        allRecipes.push(...batch)
       }
 
       setRecipes(allRecipes)
