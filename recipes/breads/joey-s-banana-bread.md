@@ -30,17 +30,16 @@ created: 2026-07-19
 1 espresso
 
 ## Method
-1. Remove odd pots and pans from oven.
-2. Preheat oven to 350º / 180º.
-3. Cream together butter and sugar.
-4. Add eggs, cacao nibs and crushed bananas.
-5. Combine well.
-6. Sift together flour, soda and salt. Add to creamed mixture. Add vanilla.
-7. Mix just until combined. Do not overmix.
-8. In a pan, braise the pecans in honey, with a teaspoon of honey and an espresso.
-9. Wait for the braised pecans to cool slightly, then mix into the rest.
-10. Pour into greased and floured loaf pan.
-11. Bake at 350º / 180º for 60 minutes.
+1. Preheat oven to 350º / 180º.
+2. Cream together butter and sugar.
+3. Add eggs, cacao nibs and crushed bananas.
+4. Combine well.
+5. Sift together flour, soda and salt. Add to creamed mixture. Add vanilla.
+6. Mix just until combined. Do not overmix.
+7. In a pan, braise the pecans in honey, with a teaspoon of honey and an espresso.
+8. Wait for the braised pecans to cool slightly, then mix into the rest.
+9. Pour into greased and floured loaf pan.
+10. Bake at 350º / 180º for 60 minutes.
 
 ## Notes
 The honey and maple syrup can be interchanged. 
