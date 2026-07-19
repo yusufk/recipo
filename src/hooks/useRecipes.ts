@@ -15,6 +15,7 @@ export interface RecipeMeta {
   difficulty: string
   tags: string[]
   image?: string
+  based_on?: string
   created: string
   slug: string
   path: string
@@ -89,6 +90,7 @@ export function useRecipes() {
             difficulty: (meta.difficulty as string) || '',
             tags: (meta.tags as string[]) || [],
             image: meta.image as string | undefined,
+            based_on: (meta.based_on as string) || undefined,
             created: (meta.created as string) || '',
             slug: file.name.replace('.md', ''),
             path: file.path,
@@ -117,7 +119,8 @@ export async function fetchRecipeContent(path: string): Promise<{ meta: Record<s
 export async function submitRecipe(
   token: string,
   userLogin: string,
-  recipe: { title: string; category: string; cuisine: string; serves: string; prep_time: string; cook_time: string; difficulty: string; tags: string; ingredients: string; method: string; notes: string }
+  recipe: { title: string; category: string; cuisine: string; serves: string; prep_time: string; cook_time: string; difficulty: string; tags: string; ingredients: string; method: string; notes: string },
+  basedOn?: string
 ) {
   const slug = recipe.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   const path = `recipes/${recipe.category}/${slug}.md`
@@ -131,7 +134,7 @@ serves: ${recipe.serves}
 prep_time: ${recipe.prep_time}
 cook_time: ${recipe.cook_time}
 difficulty: ${recipe.difficulty}
-tags: [${recipe.tags.split(',').map(t => t.trim()).join(', ')}]
+tags: [${recipe.tags.split(',').map(t => t.trim()).join(', ')}]${basedOn ? `\nbased_on: ${basedOn}` : ''}
 created: ${new Date().toISOString().split('T')[0]}
 ---`
 
@@ -196,8 +199,8 @@ ${recipe.notes ? `\n## Notes\n${recipe.notes}` : ''}
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      title: `🍳 New recipe: ${recipe.title}`,
-      body: `## New Recipe Submission\n\n**${recipe.title}**\n- Cuisine: ${recipe.cuisine}\n- Difficulty: ${recipe.difficulty}\n- Serves: ${recipe.serves}\n\nSubmitted by @${userLogin}`,
+      title: basedOn ? `🔀 Variation: ${recipe.title}` : `🍳 New recipe: ${recipe.title}`,
+      body: `## ${basedOn ? 'Recipe Variation' : 'New Recipe Submission'}\n\n**${recipe.title}**\n- Cuisine: ${recipe.cuisine}\n- Difficulty: ${recipe.difficulty}\n- Serves: ${recipe.serves}\n${basedOn ? `- Based on: \`${basedOn}\`\n` : ''}\nSubmitted by @${userLogin}`,
       head: `${userLogin}:${branchName}`,
       base: 'main',
     }),
