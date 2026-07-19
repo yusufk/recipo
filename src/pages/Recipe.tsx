@@ -126,16 +126,18 @@ export default function Recipe() {
         >
           View source on GitHub
         </a>
-        {' · '}
-        {isAuthor ? (
-          <Link to={`/edit/${category}/${slug}`} style={{ color: 'var(--accent)' }}>
-            ✏️ Edit this recipe
-          </Link>
-        ) : (
-          <Link to={`/submit?vary=${currentPath}`} style={{ color: 'var(--herb)' }}>
-            🔀 Make a variation
-          </Link>
+        {isAuthor && (
+          <>
+            {' · '}
+            <Link to={`/edit/${category}/${slug}`} style={{ color: 'var(--accent)' }}>
+              ✏️ Edit this recipe
+            </Link>
+          </>
         )}
+        {' · '}
+        <Link to={user ? `/submit?vary=${currentPath}` : '/login'} style={{ color: 'var(--herb)' }}>
+          🔀 Make a variation
+        </Link>
       </div>
 
       <Comments term={`recipes/${category}/${slug}`} />
