@@ -8,6 +8,7 @@ prep_time: 20min
 cook_time: 30min
 difficulty: easy
 tags: [cake, carrots, nuts, frosting, baking]
+image: images/carrot-cake.jpg
 created: 2009-01-28
 ---
 
