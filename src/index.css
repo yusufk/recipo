@@ -497,3 +497,51 @@ body {
   .recipe-page { padding: 1.5rem; }
   .nav a, .nav button { font-size: 1.1rem; padding: 0.3rem 0.8rem; }
 }
+
+/* ═══════════════════════════════════════
+   CONTRIBUTORS
+   ═══════════════════════════════════════ */
+
+.contributors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.contributor-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.contributor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--shadow);
+}
+
+.contributor-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+}
+
+.contributor-info h3 {
+  font-family: var(--font-handwritten);
+  font-size: 1.4rem;
+  margin-bottom: 0.15rem;
+}
+
+.contributor-info p {
+  font-size: 0.8rem;
+  color: var(--ink-light);
+  margin-bottom: 0.3rem;
+}

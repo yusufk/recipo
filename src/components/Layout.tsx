@@ -29,6 +29,8 @@ export default function Layout() {
 
       <nav className="nav">
         <Link to="/" className={isActive('/')}>All Recipes</Link>
+        <Link to="/contributors" className={isActive('/contributors')}>Contributors</Link>
+        <Link to="/favourites" className={isActive('/favourites')}>⭐ Saved</Link>
         <Link to="/submit" className={isActive('/submit')}>+ Add Recipe</Link>
       </nav>
 

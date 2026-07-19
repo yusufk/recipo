@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { fetchRecipeContent, useRecipes } from '../hooks/useRecipes'
 import { useAuth } from '../hooks/useAuth'
+import { isFavourite, toggleFavourite } from '../hooks/useFavourites'
 import Comments from '../components/Comments'
 
 export default function Recipe() {
@@ -16,6 +17,9 @@ export default function Recipe() {
   const [error, setError] = useState<string | null>(null)
 
   const currentPath = `recipes/${category}/${slug}.md`
+
+  // Favourites
+  const [saved, setSaved] = useState(() => isFavourite(currentPath))
 
   // Find variations of this recipe
   const variations = recipes.filter(r => r.based_on === currentPath)
@@ -64,7 +68,16 @@ export default function Recipe() {
         ← back to recipes
       </Link>
 
-      <h1 style={{ marginTop: '1rem' }}>{meta.title as string || slug}</h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1rem' }}>
+        <h1 style={{ flex: 1 }}>{meta.title as string || slug}</h1>
+        <button
+          onClick={() => setSaved(toggleFavourite(currentPath))}
+          title={saved ? 'Remove from saved' : 'Save recipe'}
+          style={{ background: 'none', border: 'none', fontSize: '1.8rem', cursor: 'pointer', opacity: saved ? 1 : 0.4, transition: 'opacity 0.2s' }}
+        >
+          {saved ? '⭐' : '☆'}
+        </button>
+      </div>
 
       {/* Recipe image */}
       {meta.image ? (
