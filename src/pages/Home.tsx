@@ -92,18 +92,20 @@ export default function Home() {
           </p>
         </div>
       ) : (
-        <div className="recipe-grid">
-          {filtered.slice(0, showCount).map(recipe => (
-            <RecipeCard key={recipe.path} recipe={recipe} onClick={() => navigate(`/recipe/${recipe.category}/${recipe.slug}`)} />
-          ))}
-        </div>
-        {filtered.length > showCount && (
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <button className="btn btn-outline" onClick={() => setShowCount(s => s + 12)}>
-              Show more ({filtered.length - showCount} remaining)
-            </button>
+        <>
+          <div className="recipe-grid">
+            {filtered.slice(0, showCount).map(recipe => (
+              <RecipeCard key={recipe.path} recipe={recipe} onClick={() => navigate(`/recipe/${recipe.category}/${recipe.slug}`)} />
+            ))}
           </div>
-        )}
+          {filtered.length > showCount && (
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <button className="btn btn-outline" onClick={() => setShowCount(s => s + 12)}>
+                Show more ({filtered.length - showCount} remaining)
+              </button>
+            </div>
+          )}
+        </>
       )}
     </>
   )
