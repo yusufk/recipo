@@ -61,6 +61,49 @@ body {
   background: var(--border);
 }
 
+.header-auth {
+  position: absolute;
+  top: 1rem;
+  right: 0;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+}
+
+.username {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-light);
+}
+
+.btn-small {
+  font-family: var(--font-handwritten);
+  font-size: 1rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink-light);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-small:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .header h1 {
   font-family: var(--font-handwritten);
   font-size: 3.5rem;
@@ -161,6 +204,11 @@ body {
   font-size: 0.8rem;
   color: var(--ink-light);
   margin-bottom: 0.75rem;
+}
+
+.recipe-card .meta .author {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .recipe-card .tags {

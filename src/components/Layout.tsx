@@ -10,6 +10,17 @@ export default function Layout() {
   return (
     <div className="layout">
       <header className="header">
+        <div className="header-auth">
+          {user ? (
+            <div className="user-badge">
+              <img src={user.avatar_url} alt={user.login} className="avatar" />
+              <span className="username">@{user.login}</span>
+              <button onClick={logout} className="btn-small">Sign out</button>
+            </div>
+          ) : (
+            <Link to="/login" className="btn-small">Sign in with GitHub</Link>
+          )}
+        </div>
         <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
           <h1>Recipo</h1>
         </Link>
@@ -19,13 +30,6 @@ export default function Layout() {
       <nav className="nav">
         <Link to="/" className={isActive('/')}>All Recipes</Link>
         <Link to="/submit" className={isActive('/submit')}>+ Add Recipe</Link>
-        {user ? (
-          <button onClick={logout} title={`Signed in as ${user.login}`}>
-            👋 {user.login}
-          </button>
-        ) : (
-          <Link to="/login" className={isActive('/login')}>Sign In</Link>
-        )}
       </nav>
 
       <main>

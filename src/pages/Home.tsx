@@ -103,9 +103,10 @@ function RecipeCard({ recipe, onClick }: { recipe: RecipeMeta; onClick: () => vo
     <div className="recipe-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onClick()}>
       <h3>{recipe.title}</h3>
       <div className="meta">
-        {recipe.cuisine && <span>{recipe.cuisine} · </span>}
-        {recipe.difficulty && <span>{recipe.difficulty} · </span>}
-        {recipe.prep_time && <span>⏱ {recipe.prep_time}</span>}
+        <span className="author">by @{recipe.author}</span>
+        {recipe.cuisine && <span> · {recipe.cuisine}</span>}
+        {recipe.difficulty && <span> · {recipe.difficulty}</span>}
+        {recipe.prep_time && <span> · ⏱ {recipe.prep_time}</span>}
       </div>
       {recipe.tags.length > 0 && (
         <div className="tags">
