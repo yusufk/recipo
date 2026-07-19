@@ -82,7 +82,7 @@ export default function Recipe() {
       {/* Recipe image */}
       {meta.image ? (
         <img
-          src={`https://raw.githubusercontent.com/yusufk/recipo/main/${String(meta.image).replace(/^\//, '')}`}
+          src={`/recipo/${String(meta.image).replace(/^\//, '')}`}
           alt={String(meta.title)}
           style={{ width: '100%', maxHeight: '350px', objectFit: 'cover', borderRadius: '4px', marginTop: '1rem', marginBottom: '1rem', border: '1px solid var(--border)' }}
         />

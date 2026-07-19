@@ -119,7 +119,7 @@ function RecipeCard({ recipe, onClick }: { recipe: RecipeMeta; onClick: () => vo
     <div className="recipe-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onClick()}>
       {recipe.image && (
         <img
-          src={`https://raw.githubusercontent.com/yusufk/recipo/main/${recipe.image.replace(/^\//, '')}`}
+          src={`/recipo/${recipe.image.replace(/^\//, '')}`}
           alt={recipe.title}
           className="recipe-card-img"
         />
