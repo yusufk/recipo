@@ -8,6 +8,7 @@ prep_time: 45min
 cook_time: 40min
 difficulty: medium
 tags: [custard, pastry, layers, baking, family-recipes]
+image: images/julies-custard-slice.jpg
 created: 2008-09-05
 ---
 
