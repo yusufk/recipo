@@ -4,6 +4,8 @@
 
 > `git commit -m 'added grandma's biryani'`
 
+![Recipo screenshot](public/screenshot.png)
+
 ## What is this?
 
 Recipo is a recipe sharing platform where **everything lives in Git**. No database, no CMS — just markdown files in a GitHub repo with a beautiful frontend that hides the complexity.

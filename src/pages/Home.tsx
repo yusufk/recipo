@@ -6,6 +6,7 @@ export default function Home() {
   const { recipes, loading, error } = useRecipes()
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState<string | null>(null)
+  const [showCount, setShowCount] = useState(12)
   const navigate = useNavigate()
 
   const categories = useMemo(() => {
@@ -25,6 +26,8 @@ export default function Home() {
         r.ingredients.toLowerCase().includes(q)
       )
     }
+    // Sort newest first
+    result = [...result].sort((a, b) => (b.created || '').localeCompare(a.created || ''))
     return result
   }, [recipes, search, category])
 
@@ -90,10 +93,17 @@ export default function Home() {
         </div>
       ) : (
         <div className="recipe-grid">
-          {filtered.map(recipe => (
+          {filtered.slice(0, showCount).map(recipe => (
             <RecipeCard key={recipe.path} recipe={recipe} onClick={() => navigate(`/recipe/${recipe.category}/${recipe.slug}`)} />
           ))}
         </div>
+        {filtered.length > showCount && (
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <button className="btn btn-outline" onClick={() => setShowCount(s => s + 12)}>
+              Show more ({filtered.length - showCount} remaining)
+            </button>
+          </div>
+        )}
       )}
     </>
   )
