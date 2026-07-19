@@ -206,3 +206,100 @@ ${recipe.notes ? `\n## Notes\n${recipe.notes}` : ''}
   const prData = await prRes.json()
   return prData
 }
+
+export async function editRecipe(
+  token: string,
+  userLogin: string,
+  filePath: string,
+  recipe: { title: string; category: string; cuisine: string; serves: string; prep_time: string; cook_time: string; difficulty: string; tags: string; ingredients: string; method: string; notes: string }
+) {
+  const frontmatter = `---
+title: "${recipe.title}"
+author: ${userLogin}
+category: ${recipe.category}
+cuisine: ${recipe.cuisine}
+serves: ${recipe.serves}
+prep_time: ${recipe.prep_time}
+cook_time: ${recipe.cook_time}
+difficulty: ${recipe.difficulty}
+tags: [${recipe.tags.split(',').map(t => t.trim()).join(', ')}]
+created: ${new Date().toISOString().split('T')[0]}
+---`
+
+  const body = `
+# ${recipe.title}
+
+## Ingredients
+${recipe.ingredients}
+
+## Method
+${recipe.method}
+${recipe.notes ? `\n## Notes\n${recipe.notes}` : ''}
+`
+
+  const content = frontmatter + '\n' + body
+  const encoded = btoa(unescape(encodeURIComponent(content)))
+
+  // Ensure fork exists
+  const forkRes = await fetch(`https://api.github.com/repos/${userLogin}/${REPO_NAME}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  if (!forkRes.ok) {
+    await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/forks`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    })
+    await new Promise(r => setTimeout(r, 3000))
+  }
+
+  // Get the main branch SHA
+  const mainRef = await fetch(`https://api.github.com/repos/${userLogin}/${REPO_NAME}/git/ref/heads/main`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const mainData = await mainRef.json()
+  const baseSha = mainData.object.sha
+
+  // Create a branch for the edit
+  const slug = filePath.replace('recipes/', '').replace('.md', '').replace('/', '-')
+  const branchName = `edit/${slug}-${Date.now()}`
+  await fetch(`https://api.github.com/repos/${userLogin}/${REPO_NAME}/git/refs`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ref: `refs/heads/${branchName}`, sha: baseSha }),
+  })
+
+  // Get the existing file's SHA (needed for updates)
+  const existingFile = await fetch(`https://api.github.com/repos/${userLogin}/${REPO_NAME}/contents/${filePath}?ref=${branchName}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const existingData = await existingFile.json()
+  const fileSha = existingData.sha
+
+  // Update the file
+  await fetch(`https://api.github.com/repos/${userLogin}/${REPO_NAME}/contents/${filePath}`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: `Edit recipe: ${recipe.title}`,
+      content: encoded,
+      branch: branchName,
+      sha: fileSha,
+    }),
+  })
+
+  // Create a PR
+  const prRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/pulls`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: `✏️ Edit: ${recipe.title}`,
+      body: `## Recipe Edit\n\n**${recipe.title}**\n\nEdited by @${userLogin}`,
+      head: `${userLogin}:${branchName}`,
+      base: 'main',
+    }),
+  })
+
+  const prData = await prRes.json()
+  return prData
+}

@@ -72,14 +72,12 @@ export default function Recipe() {
           View source on GitHub
         </a>
         {' · '}
-        <a
-          href={`https://github.com/yusufk/recipo/edit/main/recipes/${category}/${slug}.md`}
-          target="_blank"
-          rel="noreferrer"
+        <Link
+          to={`/edit/${category}/${slug}`}
           style={{ color: 'var(--accent)' }}
         >
           Edit this recipe
-        </a>
+        </Link>
       </div>
 
       <Comments term={`recipes/${category}/${slug}`} />
