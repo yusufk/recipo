@@ -8,6 +8,7 @@ prep_time: 90min
 cook_time: 60min
 difficulty: medium
 tags: [cake, dessert, banana, comfort]
+image: images/joey-s-banana-bread.jpg
 created: 2026-07-19
 ---
 
